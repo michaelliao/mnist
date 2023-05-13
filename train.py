@@ -14,10 +14,12 @@ from torchvision.transforms import ToTensor
 from model import NeuralNetwork
 
 
-def train(dataloader, model, loss_fn, optimizer):
+def train(dataloader, device, model, loss_fn, optimizer):
     model.train()
     running_loss = 0.0
     for batch, (inputs, labels) in enumerate(dataloader):
+        inputs = inputs.to(device)
+        labels = labels.to(device)
         optimizer.zero_grad()
         outputs = model(inputs)
         loss = loss_fn(outputs, labels)
@@ -27,12 +29,14 @@ def train(dataloader, model, loss_fn, optimizer):
     print(f'loss: {running_loss/len(dataloader):>0.3f}')
 
 
-def test(dataloader, model):
+def test(dataloader, device, model):
     model.eval()
     correct = 0
     total = 0
     with torch.no_grad():
         for inputs, labels in dataloader:
+            inputs = inputs.to(device)
+            labels = labels.to(device)
             outputs = model(inputs)
             _, predicted = torch.max(outputs.data, 1)
             total += labels.size(0)
@@ -62,8 +66,8 @@ def main():
     for t in range(epochs):
         start_time = time()
         print(f'epoch {t+1} / {epochs}\n--------------------')
-        train(train_dataloader, model, loss_fn, optimizer)
-        test(test_dataloader, model)
+        train(train_dataloader, device, model, loss_fn, optimizer)
+        test(test_dataloader, device, model)
         end_time = time()
         print(f'time: {end_time-start_time:>0.2f} seconds')
     print('done!')
