@@ -36,7 +36,7 @@ def api():
         transforms.Grayscale(1),
         transforms.ToTensor()
     ])
-    image_tensor = trans(image).unsqueeze(0)
+    image_tensor = trans(image).unsqueeze(0).to(device)
     model.eval()
     with torch.no_grad():
         output = model(image_tensor)
